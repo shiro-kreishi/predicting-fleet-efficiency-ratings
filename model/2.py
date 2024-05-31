@@ -59,8 +59,8 @@ if __name__ == '__main__':
 
     # Создание модели нейронной сети
     model = Sequential([
-        Dense(8, activation='relu', input_shape=(4,)),
-        Dense(4, activation='relu'),
+        Dense(4, activation='relu', input_shape=(1,)),
+        Dense(3, activation='relu'),
         Dense(1, activation='sigmoid')
     ])
 
