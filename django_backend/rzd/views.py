@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 import os
@@ -8,6 +7,7 @@ import logging
 from django.core.paginator import Paginator
 from django.shortcuts import render
 from .models import Polygon, Vehicle, Fines, Telematics, TripCard, DrivingStyle
+from .parser.parse import excel_to_db
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,8 @@ def upload_file(request):
             filename = fs.save(myfile.name, myfile)
             uploaded_file_url = os.path.join(settings.MEDIA_URL, filename)
             logger.info(f"Загруженный файл: {uploaded_file_url}")
-
+            print(filename)
+            excel_to_db(filename)
             data_frame = pd.read_excel(os.path.join(settings.MEDIA_ROOT, filename))
             data = data_frame.head(2).to_html(index=False)
 
@@ -45,6 +46,7 @@ def upload_file(request):
             return render(request, 'rzd/upload_file.html', {
                 'error_message': error_message
             })
+
     return render(request, 'rzd/upload_file.html')
 
 def view_data(request, model_name):
