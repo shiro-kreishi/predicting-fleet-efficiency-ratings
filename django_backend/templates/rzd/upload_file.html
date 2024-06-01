@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RZD_STAT</title>
+    <style>
+        
+        table {
+    width: 100%; /* Ширина таблицы */
+    border-collapse: collapse; /* Убираем двойные границы */
+    margin-top: 20px; /* Отступ сверху */
+}
+
+th, td {
+    border: 1px solid #ddd; /* Границы ячеек */
+    padding: 8px; /* Отступ внутри ячеек */
+    text-align: left; /* Выравнивание текста внутри ячеек */
+}
+
+th {
+    background-color: #4CAF50; /* Фоновый цвет заголовков */
+    color: white; /* Цвет текста заголовков */
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2; /* Чередующийся цвет строк */
+}
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        input[type=file] {
+            margin: 10px 0;
+        }
+
+        button {
+            background-color: #000000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #000000;
+        }
+
+        .uploaded-file {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Upload XLSX File</h2>
+    <form method="post" enctype="multipart/form-data" action="{% url 'post_upload_file' %}">
+        {% csrf_token %}
+        <input type="file" name="myfile">
+        <button type="submit">Загрузить</button>
+    </form>
+    {% if uploaded_file_url %}
+    <p>Файл загружен: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+    <div>
+        {{ data|safe }}
+    </div>
+{% endif %}
+{% if error_message %}
+    <p class="error-message">{{ error_message }}</p>
+{% endif %}
+
+{% if page_obj %}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Short Name</th>
+            <th>Polygon</th>
+            <th>Number</th>
+            <th>Structural Unit</th>
+            <th>Fine Value</th>
+            <th>Telematics Date</th>
+            <th>Mileage</th>
+            <th>Driving Style</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vehicle in page_obj %}
+        <tr>
+            <td>{{ vehicle.polygon.name }}</td>
+            <td>{{ vehicle.polygon.short_name }}</td>
+            <td>{{ vehicle.polygon.polygon }}</td>
+            <td>{{ vehicle.number }}</td>
+            <td>{{ vehicle.structural_unit }}</td>
+            <td>{{ vehicle.fines.value }}</td>
+            <td>{{ vehicle.telematics.date }}</td>
+            <td>{{ vehicle.telematics.mileage }}</td>
+            <td>{{ vehicle.driving_styles.value }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+</body>
+</html>
+
+
+{% if vehicles %}
+<!-- Table for vehicles -->
+<table>
+    <thead>
+        <tr>
+            <th>Number</th>
+            <th>Polygon Name</th>
+            <th>Polygon Short Name</th>
+            <th>Structural Unit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vehicle in vehicles %}
+        <tr>
+            <td>{{ vehicle.number }}</td>
+            <td>{{ vehicle.polygon.name }}</td>
+            <td>{{ vehicle.polygon.short_name }}</td>
+            <td>{{ vehicle.structural_unit }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if fines %}
+<!-- Table for fines -->
+<table>
+    <thead>
+        <tr>
+            <th>Vehicle Number</th>
+            <th>Fine Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fine in fines %}
+        <tr>
+            <td>{{ fine.vehicle.number }}</td>
+            <td>{{ fine.value }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if telematics %}
+<!-- Table for telematics -->
+<table>
+    <thead>
+        <tr>
+            <th>Vehicle Number</th>
+            <th>Date</th>
+            <th>Mileage</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for telematic in telematics %}
+        <tr>
+            <td>{{ telematic.vehicle.number }}</td>
+            <td>{{ telematic.date }}</td>
+            <td>{{ telematic.mileage }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if trip_cards %}
+<!-- Table for trip cards -->
+<table>
+    <thead>
+        <tr>
+            <th>Vehicle Number</th>
+            <th>Date</th>
+            <th>Mileage</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trip_card in trip_cards %}
+        <tr>
+            <td>{{ trip_card.vehicle.number }}</td>
+            <td>{{ trip_card.date }}</td>
+            <td>{{ trip_card.mileage }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if driving_styles %}
+<!-- Table for driving styles -->
+<table>
+    <thead>
+        <tr>
+            <th>Vehicle Number</th>
+            <th>Driving Style Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for driving_style in driving_styles %}
+        <tr>
+            <td>{{ driving_style.vehicle.number }}</td>
+            <td>{{ driving_style.value }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %} 
+
+</body>
+</html>
